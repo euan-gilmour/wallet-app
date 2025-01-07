@@ -12,6 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import org.walletapp.ui.theme.WalletAppTheme
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,10 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             WalletAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    KeyManagementTab(KeyViewModel())
                 }
             }
         }
@@ -31,17 +33,51 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun KeyManagementTab(viewModel: KeyViewModel) {
+    val keyStatus by viewModel.keyStatus
+    val publicKey by viewModel.publicKey
+    val keySecurityLevel by viewModel.keySecurityLevel
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    WalletAppTheme {
-        Greeting("Android")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Key Status: $keyStatus")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = "Public Key: $publicKey")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = "Key Security Level: $keySecurityLevel")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { viewModel.generateKey() }) {
+            Text("Generate Key")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { viewModel.checkKey() }) {
+            Text("Check Key Status")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { viewModel.deleteKey() }) {
+            Text("Delete Key")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { viewModel.getSecurityLevel() }) {
+            Text("Check Security Level")
+        }
+
     }
 }

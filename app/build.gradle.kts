@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.json.library)
     implementation(libs.nimbus.jose.jwt)
     implementation(libs.webrtc.android)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

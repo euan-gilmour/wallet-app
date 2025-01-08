@@ -8,8 +8,10 @@ import java.security.interfaces.ECPublicKey
 
 object DIDManager {
 
+    var did: String = ""
+
     fun createDid(domain: String): String {
-        val did = "did:web:$domain"
+        did = "did:web:$domain"
 
         val publicKey = KeyManager.getPublicKey() as ECPublicKey
 

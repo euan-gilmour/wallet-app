@@ -42,14 +42,25 @@ object DIDManager {
     }
 
     private fun createJwk(publicKey: ECPublicKey): JSONObject {
-        val x = Base64.getUrlEncoder().withoutPadding().encodeToString(publicKey.w.affineX.toByteArray())
-        val y = Base64.getUrlEncoder().withoutPadding().encodeToString(publicKey.w.affineY.toByteArray())
+        val x = publicKey.w.affineX.toByteArray().let { normalizeTo32Bytes(it) }
+        val y = publicKey.w.affineY.toByteArray().let { normalizeTo32Bytes(it) }
+
+        val xEncoded = Base64.getUrlEncoder().withoutPadding().encodeToString(x)
+        val yEncoded = Base64.getUrlEncoder().withoutPadding().encodeToString(y)
 
         return JSONObject().apply {
             put("kty", "EC")
             put("crv", "P-256")
-            put("x", x)
-            put("y", y)
+            put("x", xEncoded)
+            put("y", yEncoded)
+        }
+    }
+
+    private fun normalizeTo32Bytes(bytes: ByteArray): ByteArray {
+        return when {
+            bytes.size == 32 -> bytes
+            bytes.size > 32 -> bytes.copyOfRange(bytes.size - 32, bytes.size)
+            else -> ByteArray(32 - bytes.size) + bytes
         }
     }
 }

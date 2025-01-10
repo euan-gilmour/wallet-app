@@ -1,26 +1,23 @@
 package org.walletapp
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import org.walletapp.ui.theme.WalletAppTheme
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -28,6 +25,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
+import org.walletapp.ui.theme.WalletAppTheme
+
 
 data class NavigationItem(
     val title: String,
@@ -42,7 +43,8 @@ class MainActivity : ComponentActivity() {
             WalletAppTheme {
                 val items = listOf(
                     NavigationItem("Key Management", Icons.Default.Lock),
-                    NavigationItem("DID Management", Icons.Default.AccountBox)
+                    NavigationItem("DID Management", Icons.Default.AccountBox),
+                    NavigationItem("Presentation", Icons.Default.Create)
                 )
                 val navController = rememberNavController()
 
@@ -80,6 +82,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("Key Management") { KeyManagementTab(KeyViewModel()) }
                         composable("DID Management") { DIDManagementTab(DIDViewModel()) }
+                        composable("Presentation") { presentationTab(PresentationViewModel()) }
                     }
                 }
             }
@@ -179,6 +182,34 @@ fun DIDManagementTab(viewModel: DIDViewModel) {
 
         Button(onClick = { viewModel.copyDID(context) }) {
             Text("Copy DID")
+        }
+    }
+}
+
+@Composable
+fun presentationTab(viewModel: PresentationViewModel) {
+    val context = LocalContext.current
+
+    val barcodeLauncher = rememberLauncherForActivityResult(
+        contract = ScanContract()
+    ) { result ->
+        if (result?.contents == null) {
+            Toast.makeText(context, "Cancelled", Toast.LENGTH_LONG).show()
+        } else {
+            viewModel.initiatePresentationProcess(result.contents)
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = { barcodeLauncher.launch(ScanOptions().setOrientationLocked(false)) }) {
+            Text("Scan VP Request")
         }
     }
 }

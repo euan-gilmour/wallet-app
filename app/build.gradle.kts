@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.zxing.core)
+    implementation(libs.zxing.android.embedded)
     implementation(libs.json.library)
     implementation(libs.nimbus.jose.jwt)
     implementation(libs.webrtc.android)

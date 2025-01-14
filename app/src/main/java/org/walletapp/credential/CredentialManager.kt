@@ -1,9 +1,11 @@
 package org.walletapp.credential
 
 import android.util.Base64
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.json.JSONArray
 import org.json.JSONObject
 import org.walletapp.crypto.KeyManager
+import java.security.Security
 import java.security.Signature
 import java.util.*
 
@@ -19,7 +21,7 @@ object CredentialManager {
             put("typ", "JWT")
             put("kid", "did:web:raw.githubusercontent.com:euan-gilmour:dids:main:user#keys-1")
         }
-        val headerBase64 = base64UrlEncode(headerJson.toString())
+        val headerBase64 = base64UrlEncode(headerJson.toString().toByteArray())
 
         val now = System.currentTimeMillis()
         val exp = (now / 1000) + 5 * 60
@@ -38,7 +40,7 @@ object CredentialManager {
             put("appName", appName)
             put("iss", ISSUER_DID)
         }
-        val payloadBase64 = base64UrlEncode(payloadJson.toString())
+        val payloadBase64 = base64UrlEncode(payloadJson.toString().toByteArray())
 
         val signingInput = "$headerBase64.$payloadBase64"
 
@@ -53,49 +55,11 @@ object CredentialManager {
         val signature = Signature.getInstance("SHA256withECDSA")
         signature.initSign(privateKey)
         signature.update(data)
-        val derSignature = signature.sign()
-
-        return derToRaw(derSignature, 64)
-    }
-
-    private fun derToRaw(derSignature: ByteArray, outputLength: Int): ByteArray {
-        if (derSignature.isEmpty() || derSignature[0] != 0x30.toByte()) {
-            throw IllegalArgumentException("Invalid DER signature format")
-        }
-
-        val rLength = derSignature[3].toInt()
-        val rStart = 4
-        val rBytes = derSignature.copyOfRange(rStart, rStart + rLength)
-
-        val sLength = derSignature[5 + rLength].toInt()
-        val sStart = 6 + rLength
-        val sBytes = derSignature.copyOfRange(sStart, sStart + sLength)
-
-        val rFixed = ensureFixedLength(rBytes, outputLength / 2)
-        val sFixed = ensureFixedLength(sBytes, outputLength / 2)
-
-        return rFixed + sFixed
-    }
-
-    private fun ensureFixedLength(bytes: ByteArray, length: Int): ByteArray {
-        return when {
-            bytes.size == length -> bytes
-            bytes.size < length -> {
-                ByteArray(length - bytes.size) + bytes
-            }
-            bytes.size > length -> {
-                bytes.copyOfRange(bytes.size - length, bytes.size)
-            }
-            else -> throw IllegalArgumentException("Invalid byte array length")
-        }
+        return signature.sign()
     }
 
     private fun base64UrlEncode(data: ByteArray): String {
         return Base64.encodeToString(data, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
-    }
-
-    private fun base64UrlEncode(str: String): String {
-        return base64UrlEncode(str.toByteArray())
     }
 
 }

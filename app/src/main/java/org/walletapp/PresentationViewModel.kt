@@ -1,11 +1,13 @@
 package org.walletapp
 
+import android.content.Context
 import org.json.JSONObject
+import org.walletapp.connection.ConnectionManager
 import org.walletapp.credential.CredentialManager
 
 class PresentationViewModel {
 
-    fun initiatePresentationProcess(scannedValue: String) {
+    fun initiatePresentationProcess(context: Context, scannedValue: String) {
         val vpRequestJson = JSONObject(scannedValue)
 
         val nonce = vpRequestJson.getString("nonce")
@@ -14,6 +16,9 @@ class PresentationViewModel {
 
         val vp = CredentialManager.createVerifiablePresentationJwt(nonce, domain, appName)
         println(vp)
+
+        ConnectionManager.presentVp(context, vp, vpRequestJson.getString("signallingChannelUrl"))
+
     }
 
 }

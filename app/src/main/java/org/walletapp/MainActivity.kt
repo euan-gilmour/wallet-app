@@ -196,7 +196,7 @@ fun presentationTab(viewModel: PresentationViewModel) {
         if (result?.contents == null) {
             Toast.makeText(context, "Cancelled", Toast.LENGTH_LONG).show()
         } else {
-            viewModel.initiatePresentationProcess(result.contents)
+            viewModel.initiatePresentationProcess(context, result.contents)
         }
     }
 

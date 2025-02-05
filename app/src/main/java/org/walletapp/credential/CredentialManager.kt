@@ -62,4 +62,11 @@ object CredentialManager {
         return Base64.encodeToString(data, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
     }
 
+    private fun verifySignature(data: ByteArray, signatureBytes: ByteArray): boolean {
+        val publicKey = KeyManager.getPulicKey()
+        val signature = Signature.getInstance("SHA256withECDSA")
+        signature.initVerify(publicKey)
+        signature.update(data) return signature.verify(signatureBytes)
+    }
+
 }

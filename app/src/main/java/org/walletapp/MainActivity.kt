@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("Key Management") { KeyManagementTab(KeyViewModel()) }
                         composable("DID Management") { DIDManagementTab(DIDViewModel()) }
-                        composable("Presentation") { presentationTab(PresentationViewModel()) }
+                        composable("Presentation") { PresentationTab(PresentationViewModel()) }
                     }
                 }
             }
@@ -187,29 +187,55 @@ fun DIDManagementTab(viewModel: DIDViewModel) {
 }
 
 @Composable
-fun presentationTab(viewModel: PresentationViewModel) {
+fun PresentationTab(viewModel: PresentationViewModel) {
     val context = LocalContext.current
-
-    val barcodeLauncher = rememberLauncherForActivityResult(
-        contract = ScanContract()
-    ) { result ->
-        if (result?.contents == null) {
-            Toast.makeText(context, "Cancelled", Toast.LENGTH_LONG).show()
-        } else {
-            viewModel.initiatePresentationProcess(context, result.contents)
-        }
-    }
+    val vp by viewModel.vp
+    val verificationStatus by viewModel.verificationStatus
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { barcodeLauncher.launch(ScanOptions().setOrientationLocked(false)) }) {
-            Text("Scan VP Request")
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            Text(
+                text = "Verifiable Presentation:\n\n$vp",
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(8.dp)
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 100.dp)
+        ) {
+            Text(
+                text = "Verification Status: $verificationStatus",
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(8.dp)
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Button(onClick = { viewModel.generatePresentation() }) {
+            Text("Generate Presentation")
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Button(onClick = { viewModel.verifyPresentation() }) {
+            Text("Verify Presentation")
         }
     }
 }

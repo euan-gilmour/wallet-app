@@ -11,6 +11,12 @@ class PresentationViewModel {
     private val _vp = androidx.compose.runtime.mutableStateOf("No Presentation")
     val vp = _vp
 
+    private val _vpHeaderPlain = androidx.compose.runtime.mutableStateOf("No Presentation")
+    val vpHeaderPlain = _vpHeaderPlain
+
+    private val _vpPayloadPlain = androidx.compose.runtime.mutableStateOf("No Presentation")
+    val vpPayloadPlain = _vpPayloadPlain
+
     private val _verificationStatus = androidx.compose.runtime.mutableStateOf("Unverified")
     val verificationStatus = _verificationStatus
 
@@ -30,6 +36,18 @@ class PresentationViewModel {
 
     fun generatePresentation() {
         _vp.value = CredentialManager.createVerifiablePresentationJwt("895643876", "https://example.com", "Example App")
+        updateVpHeader()
+        updateVpPayload()
+    }
+
+    private fun updateVpHeader() {
+        _vpHeaderPlain.value = String(Base64.decode(_vp.value.split(".")[0], Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING),
+            Charsets.UTF_8)
+    }
+
+    private fun updateVpPayload() {
+        _vpPayloadPlain.value = String(Base64.decode(_vp.value.split(".")[1], Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING),
+            Charsets.UTF_8)
     }
 
     fun verifyPresentation() {

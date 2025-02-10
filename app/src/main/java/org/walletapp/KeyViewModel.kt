@@ -8,7 +8,7 @@ import org.walletapp.crypto.KeyManager
 
 class KeyViewModel : ViewModel() {
 
-    private var _keyStatus = androidx.compose.runtime.mutableStateOf("No Key")
+    private var _keyStatus = androidx.compose.runtime.mutableStateOf("Unchecked")
     val keyStatus = _keyStatus
 
     private var _keySecurityLevel = androidx.compose.runtime.mutableStateOf("Unchecked")

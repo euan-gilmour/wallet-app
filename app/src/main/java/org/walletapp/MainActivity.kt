@@ -190,6 +190,8 @@ fun DIDManagementTab(viewModel: DIDViewModel) {
 fun PresentationTab(viewModel: PresentationViewModel) {
     val context = LocalContext.current
     val vp by viewModel.vp
+    val vpHeaderPlain by viewModel.vpHeaderPlain
+    val vpPayloadPlain by viewModel.vpPayloadPlain
     val verificationStatus by viewModel.verificationStatus
 
     Column(
@@ -205,6 +207,36 @@ fun PresentationTab(viewModel: PresentationViewModel) {
         ) {
             Text(
                 text = "Verifiable Presentation:\n\n$vp",
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(8.dp)
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            Text(
+                text = "VP Header Plaintext:\n\n$vpHeaderPlain",
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(8.dp)
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            Text(
+                text = "VP Payload Plaintext:\n\n$vpPayloadPlain",
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .padding(8.dp)

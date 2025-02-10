@@ -21,7 +21,7 @@ object CredentialManager {
             put("typ", "JWT")
             put("kid", "did:web:raw.githubusercontent.com:euan-gilmour:dids:main:user#keys-1")
         }
-        val headerBase64 = base64UrlEncode(headerJson.toString().toByteArray())
+        val headerBase64 = base64UrlEncode(headerJson.toString(4).toByteArray())
 
         val now = System.currentTimeMillis()
         val exp = (now / 1000) + 5 * 60
@@ -40,7 +40,7 @@ object CredentialManager {
             put("appName", appName)
             put("iss", ISSUER_DID)
         }
-        val payloadBase64 = base64UrlEncode(payloadJson.toString().toByteArray())
+        val payloadBase64 = base64UrlEncode(payloadJson.toString(4).toByteArray())
 
         val signingInput = "$headerBase64.$payloadBase64"
 

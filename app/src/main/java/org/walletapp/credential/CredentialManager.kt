@@ -51,7 +51,7 @@ object CredentialManager {
         return "$signingInput.$signatureBase64"
     }
 
-    private fun signWithKeyStore(privateKey: java.security.PrivateKey, data: ByteArray): ByteArray {
+    public fun signWithKeyStore(privateKey: java.security.PrivateKey, data: ByteArray): ByteArray {
         val signature = Signature.getInstance("SHA256withECDSA")
         signature.initSign(privateKey)
         signature.update(data)
@@ -62,11 +62,12 @@ object CredentialManager {
         return Base64.encodeToString(data, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
     }
 
-    private fun verifySignature(data: ByteArray, signatureBytes: ByteArray): boolean {
-        val publicKey = KeyManager.getPulicKey()
+    public fun verifySignature(data: ByteArray, signatureBytes: ByteArray): Boolean {
+        val publicKey = KeyManager.getPublicKey()
         val signature = Signature.getInstance("SHA256withECDSA")
         signature.initVerify(publicKey)
-        signature.update(data) return signature.verify(signatureBytes)
+        signature.update(data)
+        return signature.verify(signatureBytes)
     }
 
 }

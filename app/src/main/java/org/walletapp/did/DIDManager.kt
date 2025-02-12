@@ -1,5 +1,7 @@
 package org.walletapp.did
 
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.security.Jwks
 import org.json.JSONArray
 import org.json.JSONObject
 import org.walletapp.crypto.KeyManager
@@ -41,18 +43,7 @@ object DIDManager {
         return didDocument.toString(4).replace("\\/", "/")
     }
 
-    private fun createJwk(publicKey: ECPublicKey): JSONObject {
-        val x = publicKey.w.affineX.toByteArray()
-        val y = publicKey.w.affineY.toByteArray()
-
-        val xEncoded = Base64.getUrlEncoder().withoutPadding().encodeToString(x)
-        val yEncoded = Base64.getUrlEncoder().withoutPadding().encodeToString(y)
-
-        return JSONObject().apply {
-            put("kty", "EC")
-            put("crv", "P-256")
-            put("x", xEncoded)
-            put("y", yEncoded)
-        }
+    public fun createJwk(publicKey: ECPublicKey): JSONObject {
+        return JSONObject(Jwks.builder().key(publicKey).build().toString())
     }
 }

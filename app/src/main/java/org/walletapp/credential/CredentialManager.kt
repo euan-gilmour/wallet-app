@@ -1,12 +1,16 @@
 package org.walletapp.credential
 
 import android.util.Base64
+import io.jsonwebtoken.Jwts
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.json.JSONArray
 import org.json.JSONObject
 import org.walletapp.crypto.KeyManager
 import java.security.Security
 import java.security.Signature
+import java.util.*
+import io.jsonwebtoken.SignatureAlgorithm
+import java.security.PrivateKey
 import java.util.*
 
 object CredentialManager {
@@ -16,39 +20,30 @@ object CredentialManager {
     private const val SAMPLE_CREDENTIAL_JWT_STRING = "eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjIwNTE5NDQxMzEsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlVuaXZlcnNpdHlEZWdyZWVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImRlZ3JlZSI6eyJ0eXBlIjoiQmFjaGVsb3JEZWdyZWUiLCJuYW1lIjoiQmFjaGVsb3Igb2YgU2NpZW5jZSJ9fX0sInN1YiI6ImRpZDp3ZWI6cmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbTpldWFuLWdpbG1vdXI6ZGlkczptYWluOnVzZXIiLCJuYmYiOjE3MzYzNzQ4NzEsImlzcyI6ImRpZDp3ZWI6cmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbTpldWFuLWdpbG1vdXI6ZGlkczptYWluOmlzc3VlciJ9.FTY_FWld59ajhyLqsgGhkXbDKDDmiJSutaKBXWBekrpP739Lwx0m_rPYpeNzTJrB5lwyjYOIVQ8xKibkWUolAw"
 
     fun createVerifiablePresentationJwt(nonce: String, domain: String, appName: String): String {
-        val headerJson = JSONObject().apply {
-            put("alg", "ES256")
-            put("typ", "JWT")
-            put("kid", "did:web:raw.githubusercontent.com:euan-gilmour:dids:main:user#keys-1")
-        }
-        val headerBase64 = base64UrlEncode(headerJson.toString(4).toByteArray())
-
-        val now = System.currentTimeMillis()
-        val exp = (now / 1000) + 5 * 60
-
-        val vpJson = JSONObject().apply {
-            put("@context", JSONArray().put("https://www.w3.org/2018/credentials/v1"))
-            put("type", JSONArray().put("VerifiablePresentation"))
-            put("verifiableCredential", JSONArray().put(SAMPLE_CREDENTIAL_JWT_STRING))
-        }
-
-        val payloadJson = JSONObject().apply {
-            put("vp", vpJson)
-            put("exp", exp)
-            put("nonce", nonce)
-            put("domain", domain)
-            put("appName", appName)
-            put("iss", ISSUER_DID)
-        }
-        val payloadBase64 = base64UrlEncode(payloadJson.toString(4).toByteArray())
-
-        val signingInput = "$headerBase64.$payloadBase64"
-
         val privateKey = KeyManager.getPrivateKey()
-        val signature = signWithKeyStore(privateKey, signingInput.toByteArray())
 
-        val signatureBase64 = base64UrlEncode(signature)
-        return "$signingInput.$signatureBase64"
+        return Jwts.builder()
+            .header()
+            .add(mapOf(
+                "alg" to "ES256",
+                "typ" to "JWT",
+            ))
+            .and()
+            .claims()
+            .add("vp", mapOf(
+                "@context" to listOf("https://www.w3.org/2018/credentials/v1"),
+                "type" to listOf("VerifiablePresentation"),
+                "verifiableCredential" to listOf(SAMPLE_CREDENTIAL_JWT_STRING)
+            ))
+            .expiration(Date(System.currentTimeMillis() + 5 * 60 * 1000))
+            .add("nonce", nonce)
+            .add("domain", domain)
+            .add("appName", appName)
+            .issuer("did:web:raw.githubusercontent.com:euan-gilmour:dids:main:user")
+            .and()
+            .signWith(privateKey, SignatureAlgorithm.ES256)
+            .compact()
+
     }
 
     public fun signWithKeyStore(privateKey: java.security.PrivateKey, data: ByteArray): ByteArray {

@@ -30,14 +30,16 @@ class PresentationViewModel {
         val vp = CredentialManager.createVerifiablePresentationJwt(nonce, domain, appName)
         println(vp)
 
-        ConnectionManager.presentVp(context, vp, vpRequestJson.getString("signallingChannelUrl"))
+        val signallingChannelUrl = vpRequestJson.getString("signallingChannelUrl")
 
+        ConnectionManager.sendVp(context, vp, signallingChannelUrl)
     }
 
     fun generatePresentation() {
         _vp.value = CredentialManager.createVerifiablePresentationJwt("895643876", "https://example.com", "Example App")
         updateVpHeader()
         updateVpPayload()
+        println(_vp.value)
     }
 
     private fun updateVpHeader() {

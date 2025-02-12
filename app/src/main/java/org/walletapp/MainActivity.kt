@@ -194,6 +194,16 @@ fun PresentationTab(viewModel: PresentationViewModel) {
     val vpPayloadPlain by viewModel.vpPayloadPlain
     val verificationStatus by viewModel.verificationStatus
 
+    val barcodeLauncher = rememberLauncherForActivityResult(
+        contract = ScanContract()
+    ) { result ->
+        if (result?.contents == null) {
+            Toast.makeText(context, "Cancelled", Toast.LENGTH_LONG).show()
+        } else {
+            viewModel.initiatePresentationProcess(context, result.contents)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -269,5 +279,12 @@ fun PresentationTab(viewModel: PresentationViewModel) {
         Button(onClick = { viewModel.verifyPresentation() }) {
             Text("Verify Presentation")
         }
+
+        Spacer(Modifier.height(16.dp))
+
+        Button(onClick = { barcodeLauncher.launch(ScanOptions().setOrientationLocked(false)) }) {
+            Text("Scan VP Request")
+        }
+
     }
 }

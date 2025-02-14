@@ -11,6 +11,7 @@ class SendPresentationSocketListener(val vp: String) : WebSocketListener() {
         val message = createVpMessage()
         println("Message: $message")
         webSocket.send(message)
+        webSocket.close(1000, null)
     }
 
     private fun createVpMessage(): String {

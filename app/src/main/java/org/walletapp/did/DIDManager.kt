@@ -5,15 +5,16 @@ import io.jsonwebtoken.security.Jwks
 import org.json.JSONArray
 import org.json.JSONObject
 import org.walletapp.crypto.KeyManager
+import org.walletapp.preferences.PreferencesManager
 import java.util.Base64
 import java.security.interfaces.ECPublicKey
 
 object DIDManager {
 
-    var did: String = ""
-
     fun createDid(domain: String): String {
-        did = "did:web:$domain"
+        val did = "did:web:$domain"
+
+        PreferencesManager.setValue("did", did)
 
         val publicKey = KeyManager.getPublicKey() as ECPublicKey
 

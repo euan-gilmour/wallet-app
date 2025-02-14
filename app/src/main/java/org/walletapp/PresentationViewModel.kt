@@ -5,6 +5,7 @@ import android.util.Base64
 import org.json.JSONObject
 import org.walletapp.connection.ConnectionManager
 import org.walletapp.credential.CredentialManager
+import org.walletapp.preferences.PreferencesManager
 
 class PresentationViewModel {
 
@@ -27,7 +28,9 @@ class PresentationViewModel {
         val domain = vpRequestJson.getString("domain")
         val appName = vpRequestJson.getString("application")
 
-        val vp = CredentialManager.createVerifiablePresentationJwt(nonce, domain, appName)
+        val vc = PreferencesManager.getValue("vc") ?: "No VC"
+
+        val vp = CredentialManager.createVerifiablePresentationJwt(nonce, domain, appName, vc)
         println(vp)
 
         val signallingChannelUrl = vpRequestJson.getString("signallingChannelUrl")
@@ -36,7 +39,8 @@ class PresentationViewModel {
     }
 
     fun generatePresentation() {
-        _vp.value = CredentialManager.createVerifiablePresentationJwt("895643876", "https://example.com", "Example App")
+        val vc = PreferencesManager.getValue("vc") ?: "No VC"
+        _vp.value = CredentialManager.createVerifiablePresentationJwt("895643876", "https://example.com", "Example App", vc)
         updateVpHeader()
         updateVpPayload()
         println(_vp.value)

@@ -22,7 +22,7 @@ class PresentationViewModel {
 
     fun createAndSendVp(context: Context, request: VerifiablePresentationRequest) {
         val vc = PreferencesManager.getValue("vc") ?: "No VC"
-        val vp = CredentialManager.createVerifiablePresentationJwt(request.nonce, request.domain, request.appName, vc)
+        val vp = CredentialManager.createVerifiablePresentationJwt(request, vc)
 
         ConnectionManager.sendVp(context, vp, request.signallingChannelUrl)
     }

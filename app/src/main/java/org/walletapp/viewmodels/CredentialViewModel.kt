@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.walletapp.connection.ConnectionManager
 import org.walletapp.credential.CredentialManager
+import org.walletapp.data.VerifiableCredentialInvitation
 import org.walletapp.preferences.PreferencesManager
 
 class CredentialViewModel : ViewModel() {
@@ -32,21 +33,25 @@ class CredentialViewModel : ViewModel() {
         }
     }
 
-    fun initiateCredentialTransfer(scannedValue: String) {
+    fun extractVcInvitation(scannedValue: String): VerifiableCredentialInvitation {
+        val invitation = JSONObject(scannedValue)
+
+        val issuer = invitation.getString("issuer")
+        val type = invitation.getString("type")
+        val webSocketsUrl = invitation.getString("webSocketsUrl")
+
+        return VerifiableCredentialInvitation(issuer, type, webSocketsUrl)
+    }
+
+    fun initiateCredentialTransfer(invitation: VerifiableCredentialInvitation) {
         viewModelScope.launch(Dispatchers.IO) {
-            val invitation = JSONObject(scannedValue)
-
-            val webSocketsUrl = invitation.getString("webSocketsUrl")
-
-            ConnectionManager.initiateCredentialTransfer(webSocketsUrl, this@CredentialViewModel)
+            ConnectionManager.initiateCredentialTransfer(invitation, this@CredentialViewModel)
         }
     }
 
     fun credentialReceived(vc: String) {
-        viewModelScope.launch(Dispatchers.IO){
-            _vc.value = vc
-            PreferencesManager.setValue("vc", _vc.value)
-        }
+        _vc.value = vc
+        PreferencesManager.setValue("vc", _vc.value)
     }
 
 }

@@ -7,6 +7,7 @@ import java.security.Signature
 import java.util.*
 import org.bouncycastle.jce.ECNamedCurveTable
 import org.bouncycastle.jce.spec.ECPrivateKeySpec
+import org.walletapp.data.VerifiablePresentationRequest
 import java.math.BigInteger
 import java.security.KeyFactory
 import java.security.PrivateKey
@@ -17,7 +18,7 @@ object CredentialManager {
     private const val ISSUER_PRIVATE_KEY_HEX = "3ed49e3382e31b3b952e4d87a41046b01f55b622c3d4fe6a991b47cd37e048ea"
     private const val SAMPLE_CREDENTIAL_JWT_STRING = "eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjIwNTE5NDQxMzEsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlVuaXZlcnNpdHlEZWdyZWVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImRlZ3JlZSI6eyJ0eXBlIjoiQmFjaGVsb3JEZWdyZWUiLCJuYW1lIjoiQmFjaGVsb3Igb2YgU2NpZW5jZSJ9fX0sInN1YiI6ImRpZDp3ZWI6cmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbTpldWFuLWdpbG1vdXI6ZGlkczptYWluOnVzZXIiLCJuYmYiOjE3MzYzNzQ4NzEsImlzcyI6ImRpZDp3ZWI6cmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbTpldWFuLWdpbG1vdXI6ZGlkczptYWluOmlzc3VlciJ9.FTY_FWld59ajhyLqsgGhkXbDKDDmiJSutaKBXWBekrpP739Lwx0m_rPYpeNzTJrB5lwyjYOIVQ8xKibkWUolAw"
 
-    fun createVerifiablePresentationJwt(nonce: String, domain: String, appName: String, vc: String): String {
+    fun createVerifiablePresentationJwt(request: VerifiablePresentationRequest, vc: String): String {
         val privateKey = KeyManager.getPrivateKey()
 
         return Jwts.builder()
@@ -34,9 +35,9 @@ object CredentialManager {
                 "verifiableCredential" to listOf(vc)
             ))
             .expiration(Date(System.currentTimeMillis() + 5 * 1000 * 60))
-            .add("nonce", nonce)
-            .add("domain", domain)
-            .add("appName", appName)
+            .add("nonce", request.nonce)
+            .add("domain", request.domain)
+            .add("appName", request.appName)
             .issuer("did:web:raw.githubusercontent.com:euan-gilmour:dids:main:user")
             .and()
             .signWith(privateKey)

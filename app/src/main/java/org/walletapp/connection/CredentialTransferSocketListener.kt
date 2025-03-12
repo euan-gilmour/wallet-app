@@ -4,7 +4,7 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import org.json.JSONObject
-import org.walletapp.CredentialViewModel
+import org.walletapp.viewmodels.CredentialViewModel
 
 class CredentialTransferSocketListener(val credentialViewModel: CredentialViewModel) : WebSocketListener() {
 

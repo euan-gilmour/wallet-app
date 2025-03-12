@@ -2,20 +2,14 @@ package org.walletapp.credential
 
 import android.util.Base64
 import io.jsonwebtoken.Jwts
-import org.json.JSONArray
-import org.json.JSONObject
-import org.walletapp.crypto.KeyManager
-import java.security.Security
+import org.walletapp.keys.KeyManager
 import java.security.Signature
 import java.util.*
-import io.jsonwebtoken.SignatureAlgorithm
 import org.bouncycastle.jce.ECNamedCurveTable
 import org.bouncycastle.jce.spec.ECPrivateKeySpec
 import java.math.BigInteger
 import java.security.KeyFactory
-import java.security.KeyPairGenerator
 import java.security.PrivateKey
-import java.util.*
 
 object CredentialManager {
 

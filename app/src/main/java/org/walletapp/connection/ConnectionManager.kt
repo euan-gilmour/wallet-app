@@ -3,7 +3,7 @@ package org.walletapp.connection
 import android.content.Context
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.walletapp.CredentialViewModel
+import org.walletapp.viewmodels.CredentialViewModel
 import java.util.concurrent.TimeUnit
 
 object ConnectionManager {

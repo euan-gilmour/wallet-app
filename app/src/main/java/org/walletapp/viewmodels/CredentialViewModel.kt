@@ -1,4 +1,4 @@
-package org.walletapp
+package org.walletapp.viewmodels
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

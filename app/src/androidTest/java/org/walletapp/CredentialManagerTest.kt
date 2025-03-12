@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.walletapp.credential.CredentialManager
-import org.walletapp.crypto.KeyManager
+import org.walletapp.keys.KeyManager
 
 @RunWith(AndroidJUnit4::class)
 class CredentialManagerTest {

@@ -1,20 +1,21 @@
-package org.walletapp
+package org.walletapp.viewmodels
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.walletapp.crypto.KeyManager
+import org.walletapp.keys.KeyManager
 
 class KeyViewModel : ViewModel() {
 
-    private var _keyStatus = androidx.compose.runtime.mutableStateOf("Unchecked")
+    private var _keyStatus = mutableStateOf("Unchecked")
     val keyStatus = _keyStatus
 
-    private var _keySecurityLevel = androidx.compose.runtime.mutableStateOf("Unchecked")
+    private var _keySecurityLevel = mutableStateOf("Unchecked")
     val keySecurityLevel = _keySecurityLevel
 
-    private var _publicKey = androidx.compose.runtime.mutableStateOf("No Key")
+    private var _publicKey = mutableStateOf("No Key")
     val publicKey = _publicKey
 
     fun checkKey() {

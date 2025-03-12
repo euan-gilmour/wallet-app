@@ -24,6 +24,10 @@ import org.walletapp.ui.components.DIDManagementTab
 import org.walletapp.ui.components.KeyManagementTab
 import org.walletapp.ui.components.PresentationTab
 import org.walletapp.ui.theme.WalletAppTheme
+import org.walletapp.viewmodels.CredentialViewModel
+import org.walletapp.viewmodels.DIDViewModel
+import org.walletapp.viewmodels.KeyViewModel
+import org.walletapp.viewmodels.PresentationViewModel
 import java.security.Security
 
 

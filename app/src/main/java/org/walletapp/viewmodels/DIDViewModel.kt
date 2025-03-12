@@ -1,8 +1,9 @@
-package org.walletapp
+package org.walletapp.viewmodels
 
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -12,10 +13,10 @@ import org.walletapp.preferences.PreferencesManager
 
 class DIDViewModel : ViewModel() {
 
-    private var _didDocument = androidx.compose.runtime.mutableStateOf(PreferencesManager.getValue("didDocument") ?: "No DID Document")
+    private var _didDocument = mutableStateOf(PreferencesManager.getValue("didDocument") ?: "No DID Document")
     val didDocument = _didDocument
 
-    private var _domain = androidx.compose.runtime.mutableStateOf("")
+    private var _domain = mutableStateOf("")
     val domain = _domain
 
     fun createDid() {

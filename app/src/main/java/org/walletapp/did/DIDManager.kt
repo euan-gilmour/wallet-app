@@ -1,12 +1,10 @@
 package org.walletapp.did
 
-import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Jwks
 import org.json.JSONArray
 import org.json.JSONObject
-import org.walletapp.crypto.KeyManager
+import org.walletapp.keys.KeyManager
 import org.walletapp.preferences.PreferencesManager
-import java.util.Base64
 import java.security.interfaces.ECPublicKey
 
 object DIDManager {

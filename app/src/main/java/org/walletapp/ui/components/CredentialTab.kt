@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import org.walletapp.CredentialViewModel
+import org.walletapp.viewmodels.CredentialViewModel
 
 @Composable
 fun CredentialTab(viewModel: CredentialViewModel) {

@@ -1,4 +1,4 @@
-package org.walletapp.crypto
+package org.walletapp.keys
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyInfo

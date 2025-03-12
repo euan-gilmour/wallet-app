@@ -1,4 +1,4 @@
-package org.walletapp.crypto
+package org.walletapp.keys
 
 class KeyManagerTest {
 

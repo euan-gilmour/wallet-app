@@ -3,7 +3,7 @@ package org.walletapp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.walletapp.crypto.KeyManager
+import org.walletapp.keys.KeyManager
 import org.walletapp.did.DIDManager
 import java.security.interfaces.ECPublicKey
 

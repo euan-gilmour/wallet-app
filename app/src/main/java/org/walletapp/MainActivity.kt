@@ -18,7 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.bouncycastle.jce.provider.BouncyCastleProvider
-import org.walletapp.preferences.PreferencesManager
+import org.walletapp.managers.PreferencesManager
 import org.walletapp.ui.components.CredentialTab
 import org.walletapp.ui.components.DIDManagementTab
 import org.walletapp.ui.components.KeyManagementTab
@@ -82,10 +82,10 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "Key Management",
+                        startDestination = "Keys",
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        composable("Key Management") { KeyManagementTab(KeyViewModel()) }
+                        composable("Keys") { KeyManagementTab(KeyViewModel()) }
                         composable("DID") { DIDManagementTab(DIDViewModel()) }
                         composable("Credential") { CredentialTab(CredentialViewModel()) }
                         composable("Presentation") { PresentationTab(PresentationViewModel()) }

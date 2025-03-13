@@ -1,5 +1,8 @@
 package org.walletapp.ui.components
 
+import android.hardware.biometrics.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import android.hardware.biometrics.BiometricPrompt
+import android.os.CancellationSignal
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
@@ -15,8 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
+import org.walletapp.auth.PresentationBiometricCallback
 import org.walletapp.data.VerifiablePresentationRequest
 import org.walletapp.viewmodels.PresentationViewModel
 
@@ -55,8 +60,18 @@ fun PresentationTab(viewModel: PresentationViewModel) {
         if (showConfirmationDialog.value && vpRequest.value != null) {
             PresentationConfirmationDialog(
                 onProceed = {
-                    viewModel.createAndSendVp(context, vpRequest.value!!)
                     showConfirmationDialog.value = false
+                    val biometricPrompt = BiometricPrompt.Builder(context).apply {
+                        setTitle("Biometric Authentication")
+                        setDescription("You must authenticate to create a Verifiable Presentation")
+                        setAllowedAuthenticators(BIOMETRIC_STRONG)
+                        setNegativeButton("Cancel", ContextCompat.getMainExecutor(context)) { dialogueInterface, which -> }
+                    }.build()
+                    biometricPrompt.authenticate(CancellationSignal(), ContextCompat.getMainExecutor(context),
+                        PresentationBiometricCallback {
+                            viewModel.createAndSendVp(vpRequest.value!!)
+                        }
+                    )
                 },
                 onDismiss = { showConfirmationDialog.value = false },
                 vpRequest.value!!

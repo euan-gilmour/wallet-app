@@ -8,8 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.walletapp.did.DIDManager
-import org.walletapp.preferences.PreferencesManager
+import org.walletapp.managers.DIDManager
+import org.walletapp.managers.PreferencesManager
 
 class DIDViewModel : ViewModel() {
 

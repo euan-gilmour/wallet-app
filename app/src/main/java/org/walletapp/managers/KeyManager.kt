@@ -1,4 +1,4 @@
-package org.walletapp.keys
+package org.walletapp.managers
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyInfo
@@ -33,7 +33,8 @@ object KeyManager {
         ).run {
             setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
             setDigests(KeyProperties.DIGEST_SHA256)
-            setUserAuthenticationRequired(false)
+            setUserAuthenticationRequired(true)
+            setUserAuthenticationParameters(30, KeyProperties.AUTH_BIOMETRIC_STRONG)
             build()
         }
 

@@ -1,4 +1,4 @@
-package org.walletapp.preferences
+package org.walletapp.managers
 
 import android.content.Context
 import android.content.SharedPreferences

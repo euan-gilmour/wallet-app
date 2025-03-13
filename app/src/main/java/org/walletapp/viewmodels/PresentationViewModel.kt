@@ -1,11 +1,10 @@
 package org.walletapp.viewmodels
 
-import android.content.Context
 import org.json.JSONObject
-import org.walletapp.connection.ConnectionManager
-import org.walletapp.credential.CredentialManager
+import org.walletapp.managers.ConnectionManager
+import org.walletapp.managers.CredentialManager
 import org.walletapp.data.VerifiablePresentationRequest
-import org.walletapp.preferences.PreferencesManager
+import org.walletapp.managers.PreferencesManager
 
 class PresentationViewModel {
 
@@ -20,11 +19,11 @@ class PresentationViewModel {
         return VerifiablePresentationRequest(nonce, domain, appName, signallingChannelUrl)
     }
 
-    fun createAndSendVp(context: Context, request: VerifiablePresentationRequest) {
+    fun createAndSendVp(request: VerifiablePresentationRequest) {
         val vc = PreferencesManager.getValue("vc") ?: "No VC"
         val vp = CredentialManager.createVerifiablePresentationJwt(request, vc)
 
-        ConnectionManager.sendVp(context, vp, request.signallingChannelUrl)
+        ConnectionManager.sendVp(vp, request.signallingChannelUrl)
     }
 
 }

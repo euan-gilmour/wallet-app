@@ -1,8 +1,7 @@
-package org.walletapp.credential
+package org.walletapp.managers
 
 import android.util.Base64
 import io.jsonwebtoken.Jwts
-import org.walletapp.keys.KeyManager
 import java.security.Signature
 import java.util.*
 import org.bouncycastle.jce.ECNamedCurveTable
@@ -93,7 +92,7 @@ object CredentialManager {
         return keyFactory.generatePrivate(privateKeySpec)
     }
 
-    public fun signWithKeyStore(privateKey: java.security.PrivateKey, data: ByteArray): ByteArray {
+    public fun signWithKeyStore(privateKey: PrivateKey, data: ByteArray): ByteArray {
         val signature = Signature.getInstance("SHA256withECDSA")
         signature.initSign(privateKey)
         signature.update(data)

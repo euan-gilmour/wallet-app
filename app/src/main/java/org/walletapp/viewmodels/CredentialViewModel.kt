@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import org.walletapp.connection.ConnectionManager
-import org.walletapp.credential.CredentialManager
+import org.walletapp.managers.ConnectionManager
+import org.walletapp.managers.CredentialManager
 import org.walletapp.data.VerifiableCredentialInvitation
-import org.walletapp.preferences.PreferencesManager
+import org.walletapp.managers.PreferencesManager
 
 class CredentialViewModel : ViewModel() {
 

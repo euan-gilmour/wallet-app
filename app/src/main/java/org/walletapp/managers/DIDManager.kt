@@ -1,10 +1,8 @@
-package org.walletapp.did
+package org.walletapp.managers
 
 import io.jsonwebtoken.security.Jwks
 import org.json.JSONArray
 import org.json.JSONObject
-import org.walletapp.keys.KeyManager
-import org.walletapp.preferences.PreferencesManager
 import java.security.interfaces.ECPublicKey
 
 object DIDManager {
@@ -42,7 +40,7 @@ object DIDManager {
         return didDocument.toString(4).replace("\\/", "/")
     }
 
-    public fun createJwk(publicKey: ECPublicKey): JSONObject {
+    fun createJwk(publicKey: ECPublicKey): JSONObject {
         return JSONObject(Jwks.builder().key(publicKey).build().toString())
     }
 }

@@ -6,6 +6,7 @@ package org.walletapp.data
  */
 data class VerifiableCredentialInvitation(
     val issuer: String,
+    val recipient: String,
     val type: String,
     val webSocketsUrl: String
 )

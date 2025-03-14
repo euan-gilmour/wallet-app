@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.nimbus.jose.jwt)
     implementation(libs.webrtc.android)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.material.icons.extended)
     api(libs.jjwt.api)
     runtimeOnly(libs.jjwt.impl)
     runtimeOnly(libs.jjwt.jackson)

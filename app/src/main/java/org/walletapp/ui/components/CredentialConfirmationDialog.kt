@@ -6,7 +6,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import org.walletapp.data.VerifiableCredentialInvitation
-import org.walletapp.data.VerifiablePresentationRequest
 
 @Composable
 fun CredentialConfirmationDialog(
@@ -15,13 +14,14 @@ fun CredentialConfirmationDialog(
     vcInvitation: VerifiableCredentialInvitation
 ) {
     AlertDialog(
-        title = { Text("VP Confirmation") },
+        title = { Text("VC Confirmation") },
         text = {
             Column {
                 Text("""
-                    You have been offered a Verifiable Presentation.
+                    You have been offered a Verifiable Credential.
                     
                     Issuer: ${vcInvitation.issuer}
+                    Recipient: ${vcInvitation.recipient}
                     Type: ${vcInvitation.type}
                     Web Socket URL: ${vcInvitation.webSocketsUrl}
                     

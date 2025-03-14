@@ -23,6 +23,7 @@ import org.walletapp.viewmodels.DIDViewModel
 
 @Composable
 fun DIDManagementTab(viewModel: DIDViewModel) {
+    val did by viewModel.did
     val didDocument by viewModel.didDocument
     val domain by viewModel.domain
 
@@ -36,6 +37,10 @@ fun DIDManagementTab(viewModel: DIDViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(text = "DID: $did")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -54,20 +59,30 @@ fun DIDManagementTab(viewModel: DIDViewModel) {
         TextField(
             value = domain,
             onValueChange = { viewModel.domainChanged(it) },
-            label = { Text("Enter your did:web domain (e.g. example.com:subdirectory") },
+            label = { Text("Enter your web domain using ':' for paths (e.g. example.com:path:to:directory)") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { viewModel.createDid() }) {
+        Button(onClick = { try {
+            viewModel.createDid()
+        } catch (e: Exception) {
+            showErrorDialog(context, e)
+        } }) {
             Text("Create DID")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = { viewModel.copyDID(context) }) {
-            Text("Copy DID")
+            Text("Copy DID Document")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { viewModel.deleteDid() }) {
+            Text("Delete DID")
         }
     }
 }

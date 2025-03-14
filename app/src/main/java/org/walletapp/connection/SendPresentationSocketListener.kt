@@ -21,4 +21,9 @@ class SendPresentationSocketListener(val vp: String) : WebSocketListener() {
         }.toString()
     }
 
+    override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+        super.onFailure(webSocket, t, response)
+        println("CONNECTION FAILED: ${t.message}")
+    }
+
 }

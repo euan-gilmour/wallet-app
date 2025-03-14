@@ -3,15 +3,19 @@ package org.walletapp.managers
 import io.jsonwebtoken.security.Jwks
 import org.json.JSONArray
 import org.json.JSONObject
+import org.walletapp.exceptions.NoKeyException
 import java.security.interfaces.ECPublicKey
 
 object DIDManager {
 
-    fun createDid(domain: String): String {
+    fun createDidDocument(domain: String): String {
         val did = "did:web:$domain"
 
         PreferencesManager.setValue("did", did)
 
+        if (!KeyManager.keyExists()) {
+            throw NoKeyException("You have not generated a key")
+        }
         val publicKey = KeyManager.getPublicKey() as ECPublicKey
 
         val jwk = createJwk(publicKey)

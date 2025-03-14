@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.jsonwebtoken.Jwts
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.walletapp.data.VerifiablePresentationRequest
 import org.walletapp.managers.CredentialManager
 import org.walletapp.managers.KeyManager
 
@@ -20,7 +21,7 @@ class CredentialManagerTest {
     @Test
     fun testJwtValidation() {
         KeyManager.generateKeys()
-        val jwt = CredentialManager.createVerifiablePresentationJwt("nonce", "domain", "appName")
+        val jwt = CredentialManager.createVerifiablePresentationJwt(VerifiablePresentationRequest("nonce", "domain", "appName", "signallingChannel"), "vc")
 
         val publicKey = KeyManager.getPublicKey()
 

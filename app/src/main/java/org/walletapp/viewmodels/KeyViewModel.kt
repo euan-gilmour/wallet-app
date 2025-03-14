@@ -9,37 +9,27 @@ import org.walletapp.managers.KeyManager
 
 class KeyViewModel : ViewModel() {
 
-    private var _keyStatus = mutableStateOf("Unchecked")
+    private var _keyStatus = mutableStateOf(if (KeyManager.keyExists()) "Key Exists" else "No Key")
     val keyStatus = _keyStatus
 
-    private var _keySecurityLevel = mutableStateOf("Unchecked")
+    private var _keySecurityLevel = mutableStateOf(if (KeyManager.keyExists()) KeyManager.getSecurityLevel() else "No Key")
     val keySecurityLevel = _keySecurityLevel
 
-    private var _publicKey = mutableStateOf("No Key")
+    private var _publicKey = mutableStateOf(if (KeyManager.keyExists()) KeyManager.getPublicKey().toString() else "No Key")
     val publicKey = _publicKey
 
-    fun checkKey() {
-        _keyStatus.value = if (KeyManager.keyExists()) "Key Exists" else "No Key"
+    fun generateKey() {
+        KeyManager.generateKeys()
+        _keyStatus.value = "Key Exists"
+        _keySecurityLevel.value = KeyManager.getSecurityLevel()
         _publicKey.value = KeyManager.getPublicKey().toString()
     }
 
-    fun generateKey() {
-        viewModelScope.launch(Dispatchers.IO) {
-            KeyManager.generateKeys()
-            _keyStatus.value = "Key Generated"
-        }
-    }
-
     fun deleteKey() {
-        viewModelScope.launch(Dispatchers.IO) {
-            KeyManager.deleteKey()
-            _keyStatus.value = "Key Deleted"
-            _publicKey.value = "No Key"
-        }
-    }
-
-    fun getSecurityLevel() {
-        _keySecurityLevel.value = KeyManager.getSecurityLevel()
+        KeyManager.deleteKey()
+        _keyStatus.value = "No Key"
+        _keySecurityLevel.value = "No Key"
+        _publicKey.value = "No Key"
     }
 
 }

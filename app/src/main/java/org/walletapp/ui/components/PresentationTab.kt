@@ -38,7 +38,12 @@ fun PresentationTab(viewModel: PresentationViewModel) {
         if (result?.contents == null) {
             Toast.makeText(context, "Cancelled", Toast.LENGTH_LONG).show()
         } else {
-            vpRequest.value = viewModel.extractVpRequest(result.contents)
+            try {
+                vpRequest.value = viewModel.extractVpRequest(result.contents)
+            } catch (e: Exception) {
+                showErrorDialog(context, e)
+                return@rememberLauncherForActivityResult
+            }
             showConfirmationDialog.value = true
         }
     }
@@ -61,17 +66,31 @@ fun PresentationTab(viewModel: PresentationViewModel) {
             PresentationConfirmationDialog(
                 onProceed = {
                     showConfirmationDialog.value = false
-                    val biometricPrompt = BiometricPrompt.Builder(context).apply {
-                        setTitle("Biometric Authentication")
-                        setDescription("You must authenticate to create a Verifiable Presentation")
-                        setAllowedAuthenticators(BIOMETRIC_STRONG)
-                        setNegativeButton("Cancel", ContextCompat.getMainExecutor(context)) { dialogueInterface, which -> }
-                    }.build()
-                    biometricPrompt.authenticate(CancellationSignal(), ContextCompat.getMainExecutor(context),
-                        PresentationBiometricCallback {
-                            viewModel.createAndSendVp(vpRequest.value!!)
-                        }
-                    )
+                    try {
+                        val biometricPrompt = BiometricPrompt.Builder(context).apply {
+                            setTitle("Biometric Authentication")
+                            setDescription("You must authenticate to create a Verifiable Presentation")
+                            setAllowedAuthenticators(BIOMETRIC_STRONG)
+                            setNegativeButton(
+                                "Cancel",
+                                ContextCompat.getMainExecutor(context)
+                            ) { dialogueInterface, which ->
+                                Toast.makeText(context, "Cancelled", Toast.LENGTH_LONG).show()
+                            }
+                        }.build()
+                        biometricPrompt.authenticate(CancellationSignal(),
+                            ContextCompat.getMainExecutor(context),
+                            PresentationBiometricCallback {
+                                try {
+                                    viewModel.createAndSendVp(vpRequest.value!!)
+                                } catch (e: Exception) {
+                                    showErrorDialog(context, e)
+                                }
+                            }
+                        )
+                    } catch (e: Exception) {
+                        showErrorDialog(context, e)
+                    }
                 },
                 onDismiss = { showConfirmationDialog.value = false },
                 vpRequest.value!!

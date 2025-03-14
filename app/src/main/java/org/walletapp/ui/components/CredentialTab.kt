@@ -24,6 +24,10 @@ import androidx.compose.ui.unit.dp
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import org.walletapp.data.VerifiableCredentialInvitation
+import org.walletapp.exceptions.MismatchedRecipientException
+import org.walletapp.exceptions.NoDIDException
+import org.walletapp.exceptions.ValueNotFoundException
+import org.walletapp.managers.PreferencesManager
 import org.walletapp.viewmodels.CredentialViewModel
 
 @Composable
@@ -40,8 +44,26 @@ fun CredentialTab(viewModel: CredentialViewModel) {
         if (result?.contents == null) {
             Toast.makeText(context, "Cancelled", Toast.LENGTH_LONG).show()
         } else {
-            vcInvitation.value = viewModel.extractVcInvitation(result.contents)
-            showConfirmationDialog.value = true
+            try {
+                vcInvitation.value = viewModel.extractVcInvitation(result.contents)
+            } catch (e: Exception) {
+                showErrorDialog(context, e)
+                return@rememberLauncherForActivityResult
+            }
+
+            // Check if the recipient field matches the user's DID
+            val recipient = vcInvitation.value?.recipient
+            val did = try {
+                PreferencesManager.getValue(PreferencesManager.Keys.DID)
+            } catch (e: ValueNotFoundException) {
+                showErrorDialog(context, NoDIDException("You have not set up a DID"))
+                return@rememberLauncherForActivityResult
+            }
+            if (recipient != did) {
+                showErrorDialog(context, MismatchedRecipientException("The recipient field does not match your DID"))
+            } else {
+                showConfirmationDialog.value = true
+            }
         }
     }
 

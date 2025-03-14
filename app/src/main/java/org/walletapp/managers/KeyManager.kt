@@ -54,8 +54,17 @@ object KeyManager {
         return keyStore.aliases().toList().contains(KEYPAIR_ALIAS)
     }
 
+    /**
+     * Remove the key entry from the keystore
+     * and delete any associated DID and VC
+     */
     fun deleteKey() {
+        if (!keyExists()) return // No further action required
+
         keyStore.deleteEntry(KEYPAIR_ALIAS)
+        PreferencesManager.deleteValue(PreferencesManager.Keys.DID)
+        PreferencesManager.deleteValue(PreferencesManager.Keys.DID_DOCUMENT)
+        PreferencesManager.deleteValue(PreferencesManager.Keys.VERIFIABLE_CREDENTIAL)
     }
 
     fun getSecurityLevel(): String {

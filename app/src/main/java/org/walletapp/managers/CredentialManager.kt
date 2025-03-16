@@ -1,114 +1,68 @@
 package org.walletapp.managers
 
-import android.util.Base64
 import io.jsonwebtoken.Jwts
-import java.security.Signature
 import java.util.*
-import org.bouncycastle.jce.ECNamedCurveTable
-import org.bouncycastle.jce.spec.ECPrivateKeySpec
 import org.walletapp.data.VerifiablePresentationRequest
-import java.math.BigInteger
-import java.security.KeyFactory
-import java.security.PrivateKey
+import org.walletapp.exceptions.NoDIDException
+import org.walletapp.exceptions.ValueNotFoundException
 
+/**
+ * A singleton object for managing functionality around Verifiable Credentials and Presentations
+ *
+ * Provides the functionality to create a Verifiable Presentation
+ */
 object CredentialManager {
 
-    private const val ISSUER_DID = "did:web:raw.githubusercontent.com:euan-gilmour:dids:main:issuer"
-    private const val ISSUER_PRIVATE_KEY_HEX = "3ed49e3382e31b3b952e4d87a41046b01f55b622c3d4fe6a991b47cd37e048ea"
-    private const val SAMPLE_CREDENTIAL_JWT_STRING = "eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjIwNTE5NDQxMzEsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlVuaXZlcnNpdHlEZWdyZWVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImRlZ3JlZSI6eyJ0eXBlIjoiQmFjaGVsb3JEZWdyZWUiLCJuYW1lIjoiQmFjaGVsb3Igb2YgU2NpZW5jZSJ9fX0sInN1YiI6ImRpZDp3ZWI6cmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbTpldWFuLWdpbG1vdXI6ZGlkczptYWluOnVzZXIiLCJuYmYiOjE3MzYzNzQ4NzEsImlzcyI6ImRpZDp3ZWI6cmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbTpldWFuLWdpbG1vdXI6ZGlkczptYWluOmlzc3VlciJ9.FTY_FWld59ajhyLqsgGhkXbDKDDmiJSutaKBXWBekrpP739Lwx0m_rPYpeNzTJrB5lwyjYOIVQ8xKibkWUolAw"
+    /**
+     * Creates a Verifiable Presentation in JSON Web Token format
+     *
+     * @param request the Verifiable Presentation Request
+     * @param vc the Verifiable Credential
+     * @return a Verifiable Presentation in JSON Web Token format
+     * @throws NoDIDException if no DID has been created
+     */
+    fun createVerifiablePresentationJwt(
+        request: VerifiablePresentationRequest,
+        vc: String
+    ): String {
 
-    fun createVerifiablePresentationJwt(request: VerifiablePresentationRequest, vc: String): String {
+        // Retrieve the private key from the KeyManager
         val privateKey = KeyManager.getPrivateKey()
 
+        // Retrieve the user's DID
+        var did: String
+        try {
+            did = PreferencesManager.getValue(PreferencesManager.Keys.DID)
+        } catch (e: ValueNotFoundException) {
+            throw NoDIDException("You have not set up a DID")
+        }
+
+        // Create the JSON Web Token for the VP
         return Jwts.builder()
             .header()
-            .add(mapOf(
-                "alg" to "ES256",
-                "typ" to "JWT",
-            ))
+            .add(
+                mapOf(
+                    "alg" to "ES256",
+                    "typ" to "JWT",
+                )
+            )
             .and()
             .claims()
-            .add("vp", mapOf(
-                "@context" to listOf("https://www.w3.org/2018/credentials/v1"),
-                "type" to listOf("VerifiablePresentation"),
-                "verifiableCredential" to listOf(vc)
-            ))
-            .expiration(Date(System.currentTimeMillis() + 5 * 1000 * 60))
+            .add(
+                "vp", mapOf(
+                    "@context" to listOf("https://www.w3.org/2018/credentials/v1"),
+                    "type" to listOf("VerifiablePresentation"),
+                    "verifiableCredential" to listOf(vc)
+                )
+            )
+            .expiration(Date(System.currentTimeMillis() + 5 * 1000 * 60)) // Expires in 5 minutes
             .add("nonce", request.nonce)
             .add("domain", request.domain)
             .add("appName", request.appName)
-            .issuer("did:web:raw.githubusercontent.com:euan-gilmour:dids:main:user")
+            .issuer(did)
             .and()
             .signWith(privateKey)
             .compact()
-
-    }
-
-    fun createVerifiableCredentialJwt(userDid: String): String {
-        val issuerPrivateKey = createIssuerPrivateKey()
-
-        return Jwts.builder()
-            .header()
-            .add(mapOf(
-                "alg"  to "ES256K",
-                "typ" to "JWT"
-            ))
-            .and()
-            .claims()
-            .add("vc", mapOf(
-                "@context" to listOf(
-                    "https://www.w3.org/2018/credentials/v1",
-                    "https://www.w3.org/2018/credentials/examples/v1"
-                ),
-                "type" to listOf(
-                    "VerifiableCredential",
-                    "UniversityDegreeCredential"
-                ),
-                "credentialSubject" to mapOf(
-                    "degree" to mapOf(
-                        "type" to "BachelorDegree",
-                        "name" to "Bachelor of Science"
-                    ),
-            )))
-            .subject(userDid)
-            .notBefore(Date(System.currentTimeMillis()))
-            .expiration(Date(System.currentTimeMillis() + 10 * 1000 * 60 * 60 * 24 * 365))
-            .issuer(ISSUER_DID)
-            .and()
-            .signWith(issuerPrivateKey)
-            .compact()
-    }
-
-    private fun createIssuerPrivateKey(): PrivateKey {
-
-        val privateKeyInt = BigInteger(ISSUER_PRIVATE_KEY_HEX, 16)
-
-        val ecParameterSpec = ECNamedCurveTable.getParameterSpec("secp256k1")
-
-        val privateKeySpec = ECPrivateKeySpec(privateKeyInt, ecParameterSpec)
-
-
-        val keyFactory = KeyFactory.getInstance("EC", "BC")
-        return keyFactory.generatePrivate(privateKeySpec)
-    }
-
-    public fun signWithKeyStore(privateKey: PrivateKey, data: ByteArray): ByteArray {
-        val signature = Signature.getInstance("SHA256withECDSA")
-        signature.initSign(privateKey)
-        signature.update(data)
-        return signature.sign()
-    }
-
-    private fun base64UrlEncode(data: ByteArray): String {
-        return Base64.encodeToString(data, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
-    }
-
-    public fun verifySignature(data: ByteArray, signatureBytes: ByteArray): Boolean {
-        val publicKey = KeyManager.getPublicKey()
-        val signature = Signature.getInstance("SHA256withECDSA")
-        signature.initVerify(publicKey)
-        signature.update(data)
-        return signature.verify(signatureBytes)
     }
 
 }

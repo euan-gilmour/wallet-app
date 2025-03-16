@@ -28,62 +28,97 @@ import org.walletapp.viewmodels.DIDViewModel
 import org.walletapp.viewmodels.KeyViewModel
 import org.walletapp.viewmodels.PresentationViewModel
 
+
+/**
+ * Represents a navigation item in the bottom navigation bar.
+ */
 data class NavigationItem(
     val title: String,
     val selectedIcon: ImageVector,
 )
 
+/**
+ * Used for managing the routes for navigation
+ */
+object Routes {
+    const val KEYS = "Keys"
+    const val DID = "DID"
+    const val CREDENTIAL = "Credential"
+    const val PRESENTATION = "Presentation"
+}
+
+// Initialize the navigation items
+private val navigationItems = listOf(
+    NavigationItem(Routes.KEYS, Icons.Filled.Key),
+    NavigationItem(Routes.DID, Icons.Filled.Person),
+    NavigationItem(Routes.CREDENTIAL, Icons.Rounded.Badge),
+    NavigationItem(Routes.PRESENTATION, Icons.Filled.MailLock)
+)
+
+
+/**
+ * The main activity of the application, responsible for setting up the UI and navigation.
+ *
+ * Jetpack Compose is used to set up a bottom navigation bar and a navigation host
+ * for switching between different tabs: Keys, DID, Credential, and Presentation.
+ */
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize the preferences file for saving and loading data about DIDs, VCs, etc.
         PreferencesManager.init(this)
+
+        // Enable edge-to-edge display
         enableEdgeToEdge()
+
         setContent {
             WalletAppTheme {
-                val items = listOf(
-                    NavigationItem("Keys", Icons.Filled.Key),
-                    NavigationItem("DID", Icons.Filled.Person),
-                    NavigationItem("Credential", Icons.Rounded.Badge),
-                    NavigationItem("Presentation", Icons.Filled.MailLock)
-                )
+
+                // Set up a NavHostController
                 val navController = rememberNavController()
 
                 Scaffold(
                     bottomBar = {
                         NavigationBar {
+
+                            // Get the current route from the controller
                             val currentRoute =
                                 navController.currentBackStackEntryAsState().value?.destination?.route
 
-                            items.forEach { item ->
+                            // Iterate over the navigation items to create a NavigationBarItem for each
+                            navigationItems.forEach { navigationItem ->
                                 NavigationBarItem(
-                                    selected = currentRoute == item.title,
+                                    selected = currentRoute == navigationItem.title,
                                     onClick = {
-                                        navController.navigate(item.title) {
+                                        navController.navigate(navigationItem.title) {
                                             launchSingleTop = true
                                             restoreState = true
                                         }
                                     },
                                     icon = {
                                         Icon(
-                                            item.selectedIcon,
-                                            contentDescription = item.title
+                                            navigationItem.selectedIcon,
+                                            contentDescription = navigationItem.title
                                         )
                                     },
-                                    label = { Text(item.title) }
+                                    label = { Text(navigationItem.title) }
                                 )
                             }
                         }
                     },
                 ) { innerPadding ->
+                    // Use NavHost to define the navigation graph and host the composable screens
                     NavHost(
                         navController = navController,
                         startDestination = "Keys",
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        composable("Keys") { KeyManagementTab(KeyViewModel()) }
-                        composable("DID") { DIDManagementTab(DIDViewModel()) }
-                        composable("Credential") { CredentialTab(CredentialViewModel()) }
-                        composable("Presentation") { PresentationTab(PresentationViewModel()) }
+                        composable(Routes.KEYS) { KeyManagementTab(KeyViewModel()) }
+                        composable(Routes.DID) { DIDManagementTab(DIDViewModel()) }
+                        composable(Routes.CREDENTIAL) { CredentialTab(CredentialViewModel()) }
+                        composable(Routes.PRESENTATION) { PresentationTab(PresentationViewModel()) }
                     }
                 }
             }

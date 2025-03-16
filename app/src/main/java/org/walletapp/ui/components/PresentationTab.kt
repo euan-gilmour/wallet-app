@@ -83,6 +83,7 @@ fun PresentationTab(viewModel: PresentationViewModel) {
                             PresentationBiometricCallback {
                                 try {
                                     viewModel.createAndSendVp(vpRequest.value!!)
+                                    Toast.makeText(context, "Sending Presentation", Toast.LENGTH_LONG).show()
                                 } catch (e: Exception) {
                                     showErrorDialog(context, e)
                                 }

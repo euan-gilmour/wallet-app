@@ -6,20 +6,35 @@ import org.json.JSONObject
 import org.walletapp.exceptions.NoKeyException
 import java.security.interfaces.ECPublicKey
 
+/**
+ * A singleton object for managing functionality around DID document creation
+ *
+ * Provides the functionality to create a DID document using a given DID and a previously generated
+ * public key from KeyManager
+ */
 object DIDManager {
 
-    fun createDidDocument(domain: String): String {
-        val did = "did:web:$domain"
+    /**
+     * Create a valid DID document for a given DID
+     *
+     * @param did the DID for which to create the document
+     * @return a valid DID document as a string representation of a JSON object
+     * @throws NoKeyException if no keypair has been generated
+     */
+    fun createDidDocument(did: String): String {
 
-        PreferencesManager.setValue("did", did)
-
+        // Verify that a key exists
         if (!KeyManager.keyExists()) {
             throw NoKeyException("You have not generated a key")
         }
+
+        // Retrieve the public key as an ECPublicKey
         val publicKey = KeyManager.getPublicKey() as ECPublicKey
 
-        val jwk = createJwk(publicKey)
+        // Format the public key as a JSON Web Key
+        val jwk = formatKeyAsJwk(publicKey)
 
+        // Construct the DID document as a JSON object
         val didDocument = JSONObject().apply {
             put("@context", JSONArray().apply {
                 put("https://www.w3.org/ns/did/v1")
@@ -40,11 +55,17 @@ object DIDManager {
             put("assertionMethod", JSONArray().put("$did#keys-1"))
         }
 
-        println(didDocument.toString(4).replace("\\/", "/"))
+        // Return the document as a string
         return didDocument.toString(4).replace("\\/", "/")
     }
 
-    fun createJwk(publicKey: ECPublicKey): JSONObject {
+    /**
+     * Format a PublicKey object as a string representation of a JSON Web Key
+     *
+     * @param publicKey the public key to format
+     * @return a string representation of a JSON Web Key
+     */
+    private fun formatKeyAsJwk(publicKey: ECPublicKey): JSONObject {
         return JSONObject(Jwks.builder().key(publicKey).build().toString())
     }
 }

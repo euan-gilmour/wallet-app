@@ -24,13 +24,14 @@ class DIDViewModel : ViewModel() {
     val domain = _domain
 
     fun createDid() {
+        val prospectiveDid = "did:web:${_domain.value}"
         try {
-            _didDocument.value = DIDManager.createDidDocument(_domain.value)
+            _didDocument.value = DIDManager.createDidDocument(prospectiveDid)
         } catch (e: Exception) {
             throw e
         }
         PreferencesManager.setValue("didDocument", _didDocument.value)
-        _did.value = "did:web:${_domain.value}"
+        _did.value = prospectiveDid
         PreferencesManager.setValue(PreferencesManager.Keys.DID, _did.value)
     }
 

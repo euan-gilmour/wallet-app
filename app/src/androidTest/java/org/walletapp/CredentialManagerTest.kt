@@ -11,7 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.walletapp.managers.KeyManager
 import org.walletapp.managers.PreferencesManager
-import org.walletapp.managers.CredentialManager
+import org.walletapp.managers.PresentationManager
 import org.walletapp.data.VerifiablePresentationRequest
 import org.walletapp.exceptions.NoDIDException
 
@@ -25,7 +25,7 @@ class CredentialManagerInstrumentedTest {
 
     @Before
     fun setUp() {
-        KeyManager.generateKeys()
+        KeyManager.generateKeysTestMode()
         PreferencesManager.init(context)
         PreferencesManager.setValue(PreferencesManager.Keys.DID, "did:web:example.com")
     }
@@ -45,7 +45,7 @@ class CredentialManagerInstrumentedTest {
             nonce = "testnonce",
             domain = "testdomain",
             appName = "testapp",
-            signallingChannelUrl = "http://example.com"
+            webSocketsUrl = "http://example.com"
         )
 
         // Sample VC
@@ -59,7 +59,7 @@ class CredentialManagerInstrumentedTest {
             }
         """.trimIndent()
 
-        val jwt = CredentialManager.createVerifiablePresentationJwt(request, vc)
+        val jwt = PresentationManager.createVerifiablePresentationJwt(request, vc)
 
         // Parse the JWT and verify with the public key
         val claims = Jwts.parser()
@@ -86,7 +86,7 @@ class CredentialManagerInstrumentedTest {
             nonce = "testnonce",
             domain = "testdomain",
             appName = "testapp",
-            signallingChannelUrl = "http://example.com"
+            webSocketsUrl = "http://example.com"
         )
 
         val vc = """
@@ -101,7 +101,7 @@ class CredentialManagerInstrumentedTest {
 
         // Test that the method throws a NoDIDException.
         assertThrows(NoDIDException::class.java) {
-            CredentialManager.createVerifiablePresentationJwt(request, vc)
+            PresentationManager.createVerifiablePresentationJwt(request, vc)
         }
     }
 }

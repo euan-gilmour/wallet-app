@@ -1,5 +1,9 @@
 package org.walletapp.exceptions
 
+/**
+ * Custom exceptions thrown by the app
+ */
+
 class ValueNotFoundException(message: String) : Exception(message)
 class NoKeyException(message: String) : Exception(message)
 class NoDIDException(message: String) : Exception(message)

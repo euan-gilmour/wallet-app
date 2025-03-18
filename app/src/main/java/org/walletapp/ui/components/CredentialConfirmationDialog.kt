@@ -7,6 +7,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import org.walletapp.data.VerifiableCredentialInvitation
 
+/**
+ * A confirmation dialog shown before creating and sending a Verifiable Credential
+ *
+ * @param onProceed The function to be called when the "Proceed" button is pressed
+ * @param onDismiss The function to be called when the "Cancel" button is pressed
+ * @param vcInvitation The Verifiable Credential invitation
+ */
 @Composable
 fun CredentialConfirmationDialog(
     onProceed: () -> Unit,
@@ -17,7 +24,8 @@ fun CredentialConfirmationDialog(
         title = { Text("VC Confirmation") },
         text = {
             Column {
-                Text("""
+                Text(
+                    """
                     You have been offered a Verifiable Credential.
                     
                     Issuer: ${vcInvitation.issuer}
@@ -26,7 +34,8 @@ fun CredentialConfirmationDialog(
                     Web Socket URL: ${vcInvitation.webSocketsUrl}
                     
                     Do you wish to proceed?
-                """.trimIndent())
+                """.trimIndent()
+                )
             }
         },
         confirmButton = {

@@ -30,14 +30,26 @@ import org.walletapp.exceptions.ValueNotFoundException
 import org.walletapp.managers.PreferencesManager
 import org.walletapp.viewmodels.CredentialViewModel
 
+/**
+ * A composable function for the Credential tab.
+ *
+ * This screen allows the user to view their Verifiable Credential if they possess one,
+ * and scan a Verifiable Credential Invitation to initiate a credential transfer.
+ *
+ * @param viewModel The view model providing the data and logic for the Credential tab.
+ */
 @Composable
 fun CredentialTab(viewModel: CredentialViewModel) {
     val context = LocalContext.current
+
+    // Get vc value from the viewModel
     val vc by viewModel.vc
 
+    // Set up variables for managing the confirmation dialog
     var vcInvitation = remember { mutableStateOf<VerifiableCredentialInvitation?>(null) }
     var showConfirmationDialog = remember { mutableStateOf(false) }
 
+    // Set up functionality for the qr code scanner
     val barcodeLauncher = rememberLauncherForActivityResult(
         contract = ScanContract()
     ) { result ->
@@ -60,13 +72,17 @@ fun CredentialTab(viewModel: CredentialViewModel) {
                 return@rememberLauncherForActivityResult
             }
             if (recipient != did) {
-                showErrorDialog(context, MismatchedRecipientException("The recipient field does not match your DID"))
+                showErrorDialog(
+                    context,
+                    MismatchedRecipientException("The recipient field does not match your DID")
+                )
             } else {
                 showConfirmationDialog.value = true
             }
         }
     }
 
+    // Display the Verifiable Credential
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -88,16 +104,19 @@ fun CredentialTab(viewModel: CredentialViewModel) {
 
         Spacer(Modifier.height(16.dp))
 
+        // Launch the QR code scanner to scan a Verifiable Credential Invitation
         Button(onClick = { barcodeLauncher.launch(ScanOptions().setOrientationLocked(false)) }) {
             Text("Scan VC Invitation")
         }
 
         Spacer(Modifier.height(16.dp))
 
+        // Delete the Verifiable Credential
         Button(onClick = { viewModel.deleteVc() }) {
             Text("Delete VC")
         }
 
+        // Show the confirmation dialog
         if (showConfirmationDialog.value && vcInvitation.value != null) {
             CredentialConfirmationDialog(
                 onProceed = {

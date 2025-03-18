@@ -25,13 +25,22 @@ import org.walletapp.auth.PresentationBiometricCallback
 import org.walletapp.data.VerifiablePresentationRequest
 import org.walletapp.viewmodels.PresentationViewModel
 
+/**
+ * A composable function for the Presentation tab.
+ *
+ * This screen allows the user to scan a Verifiable Presentation Request to create and send a VP
+ *
+ * @param viewModel The view model providing the data and logic for the Presentation tab.
+ */
 @Composable
 fun PresentationTab(viewModel: PresentationViewModel) {
     val context = LocalContext.current
 
+    // Set up variables for managing the confirmation dialog
     var vpRequest = remember { mutableStateOf<VerifiablePresentationRequest?>(null) }
     var showConfirmationDialog = remember { mutableStateOf(false) }
 
+    // Set up functionality for the qr code scanner
     val barcodeLauncher = rememberLauncherForActivityResult(
         contract = ScanContract()
     ) { result ->
@@ -55,17 +64,20 @@ fun PresentationTab(viewModel: PresentationViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
+        // Launch the QR code scanner to scan a Verifiable Presentation Request
         Button(onClick = {
             barcodeLauncher.launch(ScanOptions().setOrientationLocked(false))
         }) {
             Text("Scan VP Request")
         }
 
+        // Display the confirmation dialog
         if (showConfirmationDialog.value && vpRequest.value != null) {
             PresentationConfirmationDialog(
                 onProceed = {
                     showConfirmationDialog.value = false
+
+                    // Initiate biometric authentication before sending the VP
                     try {
                         val biometricPrompt = BiometricPrompt.Builder(context).apply {
                             setTitle("Biometric Authentication")
@@ -74,7 +86,7 @@ fun PresentationTab(viewModel: PresentationViewModel) {
                             setNegativeButton(
                                 "Cancel",
                                 ContextCompat.getMainExecutor(context)
-                            ) { dialogueInterface, which ->
+                            ) { _, _ ->
                                 Toast.makeText(context, "Cancelled", Toast.LENGTH_LONG).show()
                             }
                         }.build()
@@ -82,8 +94,13 @@ fun PresentationTab(viewModel: PresentationViewModel) {
                             ContextCompat.getMainExecutor(context),
                             PresentationBiometricCallback {
                                 try {
+                                    // Upon successful biometric authentication, create and send the VP
                                     viewModel.createAndSendVp(vpRequest.value!!)
-                                    Toast.makeText(context, "Sending Presentation", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Sending Presentation",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 } catch (e: Exception) {
                                     showErrorDialog(context, e)
                                 }

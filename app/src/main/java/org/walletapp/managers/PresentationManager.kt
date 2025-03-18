@@ -7,11 +7,11 @@ import org.walletapp.exceptions.NoDIDException
 import org.walletapp.exceptions.ValueNotFoundException
 
 /**
- * A singleton object for managing functionality around Verifiable Credentials and Presentations
+ * A singleton object for managing functionality around Verifiable Presentations
  *
  * Provides the functionality to create a Verifiable Presentation
  */
-object CredentialManager {
+object PresentationManager {
 
     /**
      * Creates a Verifiable Presentation in JSON Web Token format
@@ -33,7 +33,7 @@ object CredentialManager {
         var did: String
         try {
             did = PreferencesManager.getValue(PreferencesManager.Keys.DID)
-        } catch (e: ValueNotFoundException) {
+        } catch (_: ValueNotFoundException) {
             throw NoDIDException("You have not set up a DID")
         }
 

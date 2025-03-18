@@ -122,4 +122,30 @@ object KeyManager {
         }
     }
 
+    /**
+     * This function is identical to generateKeys except that it does not
+     * enforce biometric authentication for key use.
+     *
+     * It's exclusive use is for testing that signed Verifiable Presentations can be verified
+     * in instrumented testing via CredentialManagerTest
+     */
+    fun generateKeysTestMode() {
+        val keyPairGenerator = KeyPairGenerator.getInstance(
+            KeyProperties.KEY_ALGORITHM_EC,
+            "AndroidKeyStore"
+        )
+
+        val parameterSpec = KeyGenParameterSpec.Builder(
+            KEYPAIR_ALIAS,
+            KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY
+        ).run {
+            setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
+            setDigests(KeyProperties.DIGEST_SHA256)
+            build()
+        }
+
+        keyPairGenerator.initialize(parameterSpec)
+        keyPairGenerator.generateKeyPair()
+    }
+
 }

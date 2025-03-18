@@ -35,7 +35,7 @@ class PresentationViewModel() : ViewModel() {
             val signallingChannelUrl = vpRequestJson.getString("signallingChannelUrl")
 
             return VerifiablePresentationRequest(nonce, domain, appName, signallingChannelUrl)
-        } catch (e: JSONException) {
+        } catch (_: JSONException) {
             throw InvalidVerifiablePresentationRequestException("The scanned QR code is not a valid Verifiable Presentation request")
         }
     }
@@ -49,7 +49,7 @@ class PresentationViewModel() : ViewModel() {
     fun createAndSendVp(request: VerifiablePresentationRequest) {
         val vc = try {
             PreferencesManager.getValue(PreferencesManager.Keys.VERIFIABLE_CREDENTIAL)
-        } catch (e: ValueNotFoundException) {
+        } catch (_: ValueNotFoundException) {
             throw NoVerifiableCredentialException("You do not possess a verifiable credential")
         }
         val vp = PresentationManager.createVerifiablePresentationJwt(request, vc)

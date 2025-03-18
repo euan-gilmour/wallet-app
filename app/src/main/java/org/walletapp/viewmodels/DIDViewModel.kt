@@ -17,10 +17,10 @@ import org.walletapp.managers.PreferencesManager
  */
 class DIDViewModel : ViewModel() {
 
-    private var _did = mutableStateOf(try { PreferencesManager.getValue(PreferencesManager.Keys.DID) } catch (e: ValueNotFoundException) { "No DID" })
+    private var _did = mutableStateOf(try { PreferencesManager.getValue(PreferencesManager.Keys.DID) } catch (_: ValueNotFoundException) { "No DID" })
     val did = _did
 
-    private var _didDocument = mutableStateOf(try { PreferencesManager.getValue(PreferencesManager.Keys.DID_DOCUMENT) } catch (e: ValueNotFoundException) { "No DID Document" })
+    private var _didDocument = mutableStateOf(try { PreferencesManager.getValue(PreferencesManager.Keys.DID_DOCUMENT) } catch (_: ValueNotFoundException) { "No DID Document" })
     val didDocument = _didDocument
 
     private var _domain = mutableStateOf("")

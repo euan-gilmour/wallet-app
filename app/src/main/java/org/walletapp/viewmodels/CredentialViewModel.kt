@@ -20,7 +20,7 @@ import org.walletapp.managers.PreferencesManager
  */
 class CredentialViewModel : ViewModel() {
 
-    private val _vc = mutableStateOf(try { PreferencesManager.getValue(PreferencesManager.Keys.VERIFIABLE_CREDENTIAL) } catch (e: ValueNotFoundException) { "No VC" })
+    private val _vc = mutableStateOf(try { PreferencesManager.getValue(PreferencesManager.Keys.VERIFIABLE_CREDENTIAL) } catch (_: ValueNotFoundException) { "No VC" })
     val vc = _vc
 
     /**
@@ -47,7 +47,7 @@ class CredentialViewModel : ViewModel() {
             val webSocketsUrl = invitation.getString("webSocketsUrl")
 
             return VerifiableCredentialInvitation(issuer, recipient, type, webSocketsUrl)
-        } catch (e: JSONException) {
+        } catch (_: JSONException) {
             throw InvalidVerifiableCredentialInvitationException("The scanned QR code is not a valid Verifiable Credential invitation")
         }
     }

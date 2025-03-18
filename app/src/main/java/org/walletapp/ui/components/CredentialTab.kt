@@ -67,7 +67,7 @@ fun CredentialTab(viewModel: CredentialViewModel) {
             val recipient = vcInvitation.value?.recipient
             val did = try {
                 PreferencesManager.getValue(PreferencesManager.Keys.DID)
-            } catch (e: ValueNotFoundException) {
+            } catch (_: ValueNotFoundException) {
                 showErrorDialog(context, NoDIDException("You have not set up a DID"))
                 return@rememberLauncherForActivityResult
             }

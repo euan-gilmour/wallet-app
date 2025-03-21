@@ -56,6 +56,9 @@ fun PresentationTab(viewModel: PresentationViewModel) {
             showConfirmationDialog.value = true
         }
     }
+    val scanOptions = ScanOptions()
+    scanOptions.setPrompt("Scan a Verifiable Credential Invitation QR Code")
+    scanOptions.setOrientationLocked(false)
 
     Column(
         modifier = Modifier
@@ -66,7 +69,7 @@ fun PresentationTab(viewModel: PresentationViewModel) {
     ) {
         // Launch the QR code scanner to scan a Verifiable Presentation Request
         Button(onClick = {
-            barcodeLauncher.launch(ScanOptions().setOrientationLocked(false))
+            barcodeLauncher.launch(scanOptions)
         }) {
             Text("Scan VP Request")
         }

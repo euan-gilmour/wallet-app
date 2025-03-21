@@ -81,6 +81,9 @@ fun CredentialTab(viewModel: CredentialViewModel) {
             }
         }
     }
+    val scanOptions = ScanOptions()
+    scanOptions.setPrompt("Scan a Verifiable Credential Invitation QR Code")
+    scanOptions.setOrientationLocked(false)
 
     // Display the Verifiable Credential
     Column(
@@ -105,7 +108,7 @@ fun CredentialTab(viewModel: CredentialViewModel) {
         Spacer(Modifier.height(16.dp))
 
         // Launch the QR code scanner to scan a Verifiable Credential Invitation
-        Button(onClick = { barcodeLauncher.launch(ScanOptions().setOrientationLocked(false)) }) {
+        Button(onClick = { barcodeLauncher.launch(scanOptions) }) {
             Text("Scan VC Invitation")
         }
 

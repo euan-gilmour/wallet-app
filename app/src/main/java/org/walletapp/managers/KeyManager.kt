@@ -127,7 +127,7 @@ object KeyManager {
      * enforce biometric authentication for key use.
      *
      * It's exclusive use is for testing that signed Verifiable Presentations can be verified
-     * in instrumented testing via CredentialManagerTest
+     * in instrumented testing via PresentationManagerTest
      */
     fun generateKeysTestMode() {
         val keyPairGenerator = KeyPairGenerator.getInstance(

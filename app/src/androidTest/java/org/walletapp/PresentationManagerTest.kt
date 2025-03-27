@@ -19,7 +19,7 @@ import org.walletapp.exceptions.NoDIDException
  * Tests for the CredentialManager object
  */
 @RunWith(AndroidJUnit4::class)
-class CredentialManagerTest {
+class PresentationManagerTest {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
